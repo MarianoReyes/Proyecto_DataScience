@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultados del resumen dado</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@100;500;800&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1>Resultados del Procesamiento</h1>
+                <p>Texto ingresado:</p>
+                <p>{{ input_text }}</p>
+                <p>Resultado de contenido:</p>
+                <p>{{ content }}</p>
+                <p>Resultado de estilo de escritura:</p>
+                <p>{{ wording }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                {% if show_success_content %}
+                <h2>El resumen ingresado tiene buen contenido, dado que su score es de {{content}}</h2>
+                {% endif %}
+
+                {% if show_success_wording %}
+                <h2>El resumen ingresado tiene buena redacción, dado que su score es de {{wording}}</h2>
+                {% endif %}
+
+                {% if show_content_tips %}
+                <h2>Consejos para mejorar el contenido:</h2>
+                <ul>
+                    <li>Concéntrate en las ideas principales.</li>
+                    <li>Elimina información redundante.</li>
+                    <li>Sé preciso y claro en tus expresiones.</li>
+                    <li>Sintetiza con precisión.</li>
+                    <li>Mantén la estructura original.</li>
+                    <li>Utiliza tus propias palabras.</li>
+                </ul>
+                {% endif %}
+
+                {% if show_wording_tips %}
+                <h2>Consejos para mejorar el estilo de escritura (redacción):</h2>
+                <ul>
+                    <li>Utiliza lenguaje claro y directo.</li>
+                    <li>Mantén la coherencia en la redacción.</li>
+                    <li>Revisa y edita cuidadosamente.</li>
+                    <li>Resalta los conceptos clave.</li>
+                    <li>Mantén la longitud adecuada.</li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
