@@ -69,3 +69,9 @@ body{
     padding: 6px 12px;
     border-top: none;
   }
+
+  .img_graficas{
+    width: 400px;
+    height: 400px;
+    margin-bottom: 20px;
+  }
