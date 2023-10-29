@@ -1,62 +1,35 @@
 import torch
-import torch.nn as nn
 from transformers import AutoTokenizer
-from transformers.modeling_utils import PreTrainedModel
+from transformers import AutoModelForSequenceClassification
 
-# Define la arquitectura del modelo
+# Cargar el tokenizer
+tokenizer = AutoTokenizer.from_pretrained("models/debertav3base")
 
+# Crear una instancia del modelo
+modelo_local = AutoModelForSequenceClassification.from_pretrained(
+    "models/debertav3base")
 
-class Deberta(nn.Module):
-    def __init__(self, deberta_model):
-        super(Deberta, self).__init__()
-        self.deberta = deberta_model
-        self.model = nn.Sequential(
-            nn.Dropout(0.1),
-            nn.Linear(2, 768),
-            nn.ReLU(),
-            nn.Linear(768, 256),
-            nn.ReLU(),
-            nn.Linear(256, 2)
-        )
+# Texto de entrada para hacer una predicción (reemplaza con tu propio texto)
+texto_de_prueba = "The Third Wave was an experiment to see how people reacted to a new one leader government."
 
-    def forward(self, input_ids, attention_mask):
-        x = self.deberta(input_ids=input_ids, attention_mask=attention_mask)
-        x = x.logits  # Obtén las logits de la salida de Deberta
-        x = self.model(x)
-        return x
+# Tokeniza el texto
+tokens = tokenizer(texto_de_prueba, padding=True,
+                   truncation=True, max_length=512, return_tensors="pt")
 
-
-# Ruta al modelo preentrenado guardado localmente
-modelo_preentrenado_path = "deberta_nlp.pth"
-
-# Cargar el tokenizer del modelo preentrenado
-tokenizer = AutoTokenizer.from_pretrained("microsoft/deberta-base")
-
-# Crear una instancia del modelo Deberta
-deberta_model = Deberta(
-    PreTrainedModel.from_pretrained("microsoft/deberta-base"))
-
-# Cargar los pesos del modelo desde el archivo .pth
-deberta_model.load_state_dict(torch.load(
-    modelo_preentrenado_path, map_location=torch.device('cpu')))
-
-# Asegurarse de que el modelo esté en modo de evaluación
-deberta_model.eval()
-
-new_text = "Tu texto de ejemplo aquí..."
-
-# Tokenizar y ajustar la secuencia de entrada
-nuevo_resumen_encoded = tokenizer(
-    new_text, padding=True, truncation=True, return_tensors="pt", max_length=512)
-
-# Realizar la predicción con el modelo
+# Realiza la predicción
 with torch.no_grad():
-    input_ids = nuevo_resumen_encoded['input_ids']
-    attention_mask = nuevo_resumen_encoded['attention_mask']
+    input_ids = tokens["input_ids"]
+    attention_mask = tokens["attention_mask"]
+    prediction = modelo_local(input_ids, attention_mask)
 
-    outputs = deberta_model(input_ids, attention_mask)
-    content_prediction, wording_prediction = outputs[0][0], outputs[0][1]
+# Obtener las probabilidades de clase
+probabilidades_clase = torch.softmax(prediction.logits, dim=1)
 
-# Imprimir las predicciones
-print(f'Predicción para "content": {content_prediction.item()}')
-print(f'Predicción para "wording": {wording_prediction.item()}')
+# Ahora puedes acceder a las probabilidades para cada clase
+# Probabilidad de la clase 0
+probabilidad_clase_0 = probabilidades_clase[0][0].item()
+# Probabilidad de la clase 1
+probabilidad_clase_1 = probabilidades_clase[0][1].item()
+
+print("Probabilidad de la clase 0:", probabilidad_clase_0)
+print("Probabilidad de la clase 1:", probabilidad_clase_1)
