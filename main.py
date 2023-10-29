@@ -49,47 +49,28 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/process_text', methods=['POST'])
+@app.route('/process_text_deberta', methods=['POST'])
 def process_text_deberta():
     if request.method == 'POST':
         new_text = request.form['input_text']
         # Tokenizar y ajustar la secuencia de entrada
 
-        # Tokeniza y codifica el nuevo resumen
-        nuevo_resumen_encoded = tokenizer.encode_plus(
-            new_text,
-            padding=True,
-            truncation=True,
-            max_length=512,
-            return_tensors="pt"
-        )
+        # aqui realizar la prediccion
 
-        # Realiza la predicción con el modelo
-        with torch.no_grad():
-            input_ids = nuevo_resumen_encoded['input_ids'].to(device)
-            attention_mask = nuevo_resumen_encoded['attention_mask'].to(device)
-
-            outputs = model(input_ids, attention_mask)
-            # Predicción para "content"
-            content_prediction = outputs[0][0].item()
-            # Predicción para "wording"
-            wording_prediction = outputs[0][1].item()
-
-        # Imprime las predicciones
-        print(f'Predicción para "content": {content_prediction}')
-        print(f'Predicción para "wording": {wording_prediction}')
-
-        # Definir umbrales
-        content_threshold = 0.6
-        wording_threshold = 0.7
-
-        # Determinar si se deben mostrar consejos
-        # show_content_tips = predicted_content < content_threshold
-        # show_success_content = predicted_content > content_threshold
-        # show_wording_tips = predicted_wording < wording_threshold
-        # show_success_wording = predicted_wording > wording_threshold
         # content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording
         return render_template('results_deberta.html', input_text=new_text)
+
+
+@app.route('/process_text_lstm', methods=['POST'])
+def process_text_lstm():
+    if request.method == 'POST':
+        new_text = request.form['input_text']
+        # Tokenizar y ajustar la secuencia de entrada
+
+        # aqui realizar la prediccion
+
+        # content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording
+        return render_template('results_lstm.html', input_text=new_text)
 
 
 if __name__ == '__main__':
