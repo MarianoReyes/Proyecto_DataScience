@@ -16,7 +16,8 @@ body{
     margin: 20px;
     border: none;
     background-color: #0174BE;
-    color: #fff;
+    color: #fff!important;
+    text-decoration: none;
     border-radius: 10px;
     transition: 0.5s;
 }
