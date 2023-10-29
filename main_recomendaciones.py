@@ -4,6 +4,24 @@ import torch.nn as nn
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
 import pandas as pd
+import pickle
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Cargar el tokenizer
+with open('./models/lstm/tokenizer.pickle', 'rb') as tokenizer_file:
+    tokenizer = pickle.load(tokenizer_file)
+
+# Cargar el modelo
+model = load_model('./models/lstm/modelo_resumen.h5')
+
+def preprocess_text(text):
+    # Tokeniza el texto
+    text_sequence = tokenizer.texts_to_sequences([text])
+    padded_text_sequence = pad_sequences(text_sequence, maxlen=100)
+    return padded_text_sequence
+
 
 app = Flask(__name__)
 
@@ -88,13 +106,20 @@ def process_text_deberta():
 def process_text_lstm():
     if request.method == 'POST':
         new_text = request.form['input_text']
-        # Tokenizar y ajustar la secuencia de entrada
 
-        # aqui realizar la prediccion
+        # Preprocesa el texto de entrada
+        padded_text_sequence = preprocess_text(new_text)
 
-        # content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording
-        return render_template('results_lstm.html', input_text=new_text)
+        # Realiza la predicción
+        prediction = model.predict(padded_text_sequence)
 
+        # La predicción contendrá los puntajes de contenido y redacción
+        predicted_content = prediction[0][0]
+        predicted_wording = prediction[0][1]
+
+        # Realiza cualquier otro procesamiento necesario
+
+        return render_template('results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording)
 
 if __name__ == '__main__':
     app.run(debug=True)
