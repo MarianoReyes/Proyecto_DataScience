@@ -5,44 +5,6 @@ from transformers import AutoTokenizer
 
 app = Flask(__name__)
 
-# Define la arquitectura del modelo
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
-class Deberta(nn.Module):
-    def __init__(self, deberta):
-        super(Deberta, self).__init__()
-        self.deberta = deberta
-        self.model = nn.Sequential(nn.Dropout(0.1),
-                                   nn.Linear(2, 768),
-                                   nn.ReLU(),
-                                   nn.Linear(768, 256),
-                                   nn.ReLU(),
-                                   nn.Linear(256, 2))
-
-    def forward(self, input_ids, attention_mask):
-        x = self.deberta(input_ids=input_ids, attention_mask=attention_mask)
-        x = x[0].type(torch.float32)
-        x = self.model(x)
-        return x
-
-
-# Especifica la ruta o el nombre del modelo preentrenado que deseas utilizar
-modelo_preentrenado = "/models/deberta"
-
-# Carga el tokenizer del modelo preentrenado
-tokenizer = AutoTokenizer.from_pretrained(modelo_preentrenado)
-
-# Crea una instancia del modelo
-# Puedes inicializarlo con cualquier modelo necesario
-model = Deberta(deberta=None)
-
-# Carga los pesos del modelo desde el archivo .pth
-model.load_state_dict(torch.load('deberta_nlp.pth'))
-
-# Asegúrate de que el modelo esté en modo de evaluación
-model.eval()
-
 
 @app.route('/')
 def home():
