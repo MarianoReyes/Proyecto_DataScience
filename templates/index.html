@@ -38,6 +38,24 @@
                             <input class="button" type="submit" value="Evaluar" />
                         </form>
                     </div>
+                    <div class="col-lg-6 text-center">
+                        <h6>Gráfica 1. Comparación de Puntajes de Contenido con el modelo deBerta (Valores Reales vs. Predicciones)
+                        </h6>
+                        <img class="img_graficas" src="{{ url_for('static', filename='imgs/deBerta1.png') }}">
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <h6>Gráfica 2. Comparación de Puntajes de Redacción con el modelo deBerta (Valores Reales vs. Predicciones)</h6>
+                        <img class="img_graficas" src="{{ url_for('static', filename='imgs/deBerta2.png') }}">
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <h6>Gráfico 3. Histograma de Errores en Puntajes de Contenido con el modelo deBerta</h6>
+                        <img class="img_graficas" src="{{ url_for('static', filename='imgs/deBerta3.png') }}">
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <h6>Gráfico 4. Histograma de Errores en Puntajes de Redacción con el modelo deBerta
+                        </h6>
+                        <img class="img_graficas" src="{{ url_for('static', filename='imgs/deBerta4.png') }}">
+                    </div>
                 </div>
             </div>
 
