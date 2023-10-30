@@ -117,9 +117,13 @@ def process_text_lstm():
         predicted_content = prediction[0][0]
         predicted_wording = prediction[0][1]
 
+        # Determina si se deben mostrar recomendaciones
+        show_content_tips = predicted_content < 0.6
+        show_wording_tips = predicted_wording < 0.7
+
         # Realiza cualquier otro procesamiento necesario
 
-        return render_template('results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording)
+        return render_template('results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips)
 
 if __name__ == '__main__':
     app.run(debug=True)
