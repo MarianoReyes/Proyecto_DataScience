@@ -8,6 +8,7 @@ import pickle
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from scipy.stats import percentileofscore
 
 # Cargar el tokenizer
 with open('./models/lstm/tokenizer.pickle', 'rb') as tokenizer_file:
@@ -39,7 +40,7 @@ min_wording = df['wording'].min()
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('estudiantes/index.html')
 
 
 @app.route('/process_text_deberta', methods=['POST'])
@@ -99,7 +100,11 @@ def process_text_deberta():
         else:
             show_success_wording = True
 
-        return render_template('results_deberta.html', input_text=texto_de_prueba, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording)
+        # Calculate percentiles
+        percentile_content = percentileofscore(df['content'], predicted_content)
+        percentile_wording = percentileofscore(df['wording'], predicted_wording)
+
+        return render_template('estudiantes/results_deberta.html', input_text=texto_de_prueba, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording, percentile_content=percentile_content, percentile_wording=percentile_wording, improved_text=improved_text)
 
 
 @app.route('/process_text_lstm', methods=['POST'])
@@ -123,7 +128,11 @@ def process_text_lstm():
 
         # Realiza cualquier otro procesamiento necesario
 
-        return render_template('results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips)
+        # Calculate percentiles
+        percentile_content = percentileofscore(df['content'], predicted_content)
+        percentile_wording = percentileofscore(df['wording'], predicted_wording)
+
+        return render_template('estudiantes/results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, percentile_content=percentile_content, percentile_wording=percentile_wording, improved_text=improved_text)
 
 if __name__ == '__main__':
     app.run(debug=True)
