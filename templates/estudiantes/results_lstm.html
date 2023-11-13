@@ -42,12 +42,15 @@
                 
             </div>
             <div class="col-lg-6">
+
                 {% if show_success_content %}
-                <h2>El resumen ingresado tiene buen contenido, dado que su score es de {{content}}</h2>
+                <h2>El resumen ingresado tiene buen contenido, dado que su score es de:</h2>
+                <p class="highlight_text"> {{content}}</p>
                 {% endif %}
 
                 {% if show_success_wording %}
                 <h2>El resumen ingresado tiene buena redacción, dado que su score es de {{wording}}</h2>
+                <p class="highlight_text"> {{wording}}</p>
                 {% endif %}
 
                 {% if show_content_tips %}

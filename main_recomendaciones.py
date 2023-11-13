@@ -9,6 +9,17 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from scipy.stats import percentileofscore
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from translate import Translator
+
+# Cargar el modelo GPT-2 y el tokenizador
+gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')
+gpt2_tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+
+# Función para dividir un texto en fragmentos de tamaño máximo
+def split_text(text, max_length):
+    return [text[i:i+max_length] for i in range(0, len(text), max_length)]
+
 
 # Cargar el tokenizer
 with open('./models/lstm/tokenizer.pickle', 'rb') as tokenizer_file:
@@ -36,7 +47,6 @@ min_content = df['content'].min()
 # Encontrar el valor máximo y mínimo en la columna 'wording'
 max_wording = df['wording'].max()
 min_wording = df['wording'].min()
-
 
 @app.route('/')
 def home():
@@ -104,6 +114,18 @@ def process_text_deberta():
         percentile_content = percentileofscore(df['content'], predicted_content)
         percentile_wording = percentileofscore(df['wording'], predicted_wording)
 
+        # Texto original
+        original_text = texto_de_prueba
+
+        # Tokenizar el texto original
+        input_ids = gpt2_tokenizer.encode(original_text, return_tensors='pt')
+
+        # Generar texto mejorado usando GPT-2
+        output = gpt2_model.generate(input_ids, max_length=150, num_beams=5, no_repeat_ngram_size=2, top_k=50, top_p=0.95, temperature=0.7)
+
+        # Decodificar la salida generada
+        improved_text = gpt2_tokenizer.decode(output[0], skip_special_tokens=True)
+
         return render_template('estudiantes/results_deberta.html', input_text=texto_de_prueba, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording, percentile_content=percentile_content, percentile_wording=percentile_wording, improved_text=improved_text)
 
 
@@ -111,6 +133,11 @@ def process_text_deberta():
 def process_text_lstm():
     if request.method == 'POST':
         new_text = request.form['input_text']
+
+        show_content_tips = False
+        show_success_content = False
+        show_wording_tips = False
+        show_success_wording = False
 
         # Preprocesa el texto de entrada
         padded_text_sequence = preprocess_text(new_text)
@@ -126,13 +153,35 @@ def process_text_lstm():
         show_content_tips = predicted_content < 0.6
         show_wording_tips = predicted_wording < 0.7
 
+        if predicted_content < 0.6:
+            show_content_tips = True
+        else:
+            show_success_content = True
+
+        if predicted_wording < 0.7:
+            show_wording_tips = True
+        else:
+            show_success_wording = True
+
         # Realiza cualquier otro procesamiento necesario
 
         # Calculate percentiles
         percentile_content = percentileofscore(df['content'], predicted_content)
         percentile_wording = percentileofscore(df['wording'], predicted_wording)
 
-        return render_template('estudiantes/results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, percentile_content=percentile_content, percentile_wording=percentile_wording, improved_text=improved_text)
+        # Texto original
+        original_text = new_text
+
+        # Tokenizar el texto original
+        input_ids = gpt2_tokenizer.encode(original_text, return_tensors='pt')
+
+        # Generar texto mejorado usando GPT-2
+        output = gpt2_model.generate(input_ids, max_length=len(input_ids[0]) + 20, num_beams=5, no_repeat_ngram_size=2, top_k=50, top_p=0.95, temperature=0.7)
+
+        # Decodificar la salida generada
+        improved_text = gpt2_tokenizer.decode(output[0], skip_special_tokens=True)
+
+        return render_template('estudiantes/results_lstm.html', input_text=new_text, content=predicted_content, wording=predicted_wording, show_content_tips=show_content_tips, show_wording_tips=show_wording_tips, show_success_content=show_success_content, show_success_wording=show_success_wording, percentile_content=percentile_content, percentile_wording=percentile_wording, improved_text=improved_text)
 
 if __name__ == '__main__':
     app.run(debug=True)
