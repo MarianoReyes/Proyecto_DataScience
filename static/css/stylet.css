@@ -1,13 +1,12 @@
 body{
-    background-color: #FFF0CE!important;
-    color: #0C356A!important;
+    background-color: #CCC9A1!important;
+    color: #280004!important;
     font-family: 'Kanit', sans-serif!important;
 }
 
 ul li{
   margin-left: 10px;
 }
-
 
 .text_form{
     width: 100%;
@@ -20,7 +19,7 @@ ul li{
     padding: 20px 50px;
     margin: 20px;
     border: none;
-    background-color: #0174BE;
+    background-color: #A53F2B;
     color: #fff!important;
     text-decoration: none;
     border-radius: 10px;
@@ -28,7 +27,7 @@ ul li{
 }
 
 .button:hover{
-    background-color: #FFC436;
+    background-color: #4C230A;
 }
 
 /* Style the tab */
@@ -38,7 +37,7 @@ ul li{
   
   /* Style the buttons inside the tab */
   .tab button {
-    background-color: #0174BE;
+    background-color: #A53F2B;
     border: #fff 1px solid!important;
     color: #fff;
     float: left;
@@ -61,12 +60,12 @@ ul li{
   
   /* Change background color of buttons on hover */
   .tab button:hover {
-    background-color: #FFC436;
+    background-color: #4C230A;
   }
   
   /* Create an active/current tablink class */
   .tab button.active {
-    background-color: #FFC436;
+    background-color: #4C230A;
   }
   
   /* Style the tab content */
@@ -91,7 +90,7 @@ ul li{
   .highlight_text_v2{
     text-align: center;
     background-color: #fff;
-    font-size: 30px;
+    font-size: 25px;
     padding: 20px;
     border-radius: 10px;
   }
